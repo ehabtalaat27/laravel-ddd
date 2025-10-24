@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\User\Infrastructure\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,5 +44,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public static function newFactory()
+    {
+        return \App\User\Infrastructure\Database\Factories\UserFactory::new();
     }
 }

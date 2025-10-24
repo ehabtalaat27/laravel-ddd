@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Shared\Base;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Psr\Container\ContainerExceptionInterface;

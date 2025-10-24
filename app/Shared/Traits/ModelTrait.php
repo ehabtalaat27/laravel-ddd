@@ -11,11 +11,7 @@ trait ModelTrait
     public function __construct()
     {
         parent::__construct();
-        if (isset($this->dates)) {
-            foreach ($this->dates as $date) {
-                $this->casts[$date] = 'datetime';
-            }
-        }
+
     }
     /**
      * @return array
@@ -25,71 +21,33 @@ trait ModelTrait
         return $this->filters ?? [];
     }
 
-    /**
-     * @return array
-     */
-    public function getFilterModels(): array
-    {
-        return $this->filterModels ?? [];
-    }
-
-    public function getFilterCustom(): array
-    {
-        return $this->filterCustom ?? [];
-    }
-
     public function getDefinedRelations()
     {
         return $this->definedRelations ?? [];
     }
+public function scopeOfKeyword($query, $keyword)
+{
+    $columns = $this->searchable ?? [];
 
-    public function syncOneToMany($relation, $options = []): void
-    {
-        $oldOptionsIDs = [];
-        // create new options
-        $newOptions = [];
-        foreach ($options as $option) {
-            if (!isset($option['id'])) {
-                $newOptions[] = $this->$relation()->getModel()->newInstance($option);
+    if (empty($keyword) || empty($columns)) {
+        return $query;
+    }
+
+   return $query->where(function ($q) use ($columns, $keyword) {
+        foreach ($columns as $column) {
+            // Check if it's a relationship column (contains a dot)
+            if (str_contains($column, '.')) {
+                [$relation, $relatedColumn] = explode('.', $column, 2);
+                
+                $q->orWhereHas($relation, function ($relationQuery) use ($relatedColumn, $keyword) {
+                    $relationQuery->whereRaw("LOWER($relatedColumn) LIKE ?", ['%' . strtolower($keyword) . '%']);
+                });
             } else {
-                $oldOptionsIDs[] = $option['id'];
+                // Regular column search
+                $q->orWhereRaw("LOWER($column) LIKE ?", ['%' . strtolower($keyword) . '%']);
             }
         }
-        // delete removed options
-        $allOptionsIDs = $this->$relation->lists('id');
-        $allOptionsIDs = $allOptionsIDs->all();
-        if (!empty($allOptionsIDs)) {
-            $removedOptionsIDs = array_diff($allOptionsIDs, $oldOptionsIDs);
-            $this->$relation()->whereIn('id', $removedOptionsIDs)->delete();
-        }
-        // save new options after delete removed options
-        $this->$relation()->saveMany($newOptions);
-    }
-
-    public static function getConstants($keyContains = null, $returnCount = false): array|int
-    {
-        // Get all constants
-        $constants = (new ReflectionClass(static::class))->getConstants();
-        // Return filtered constants based on constants names filter
-        if (!empty($keyContains)) {
-            $constants = array_filter($constants, static function ($k) use ($keyContains) {
-                return str_starts_with($k, $keyContains);
-            }, ARRAY_FILTER_USE_KEY);
-        }
-        if ($returnCount) {
-            return count($constants);
-        }
-        return $constants;
-    }
-
-    public function getActiveStatusAttribute(): Application|array|string|Translator|\Illuminate\Contracts\Foundation\Application|null
-    {
-        return $this->is_active ? __('Active') : __('Inactive');
-    }
-
-    public function getActiveClassAttribute(): string
-    {
-        return $this->is_active ? 'success' : 'danger';
-    }
+    });
+}
 
 }

@@ -22,13 +22,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         foreach (glob(app_path('*/Infrastructure/Providers/*ServiceProvider.php')) as $provider) {
-           $class = (string) Str::of($provider)
-    ->replace(app_path(), 'App')
-    ->replace('/', '\\')
-    ->replace('.php', '');
+            $class = (string) Str::of($provider)
+                ->replace(app_path(), 'App')
+                ->replace('/', '\\')
+                ->replace('.php', '');
 
             $this->app->register($class);
-            logger()->info("Registered provider: {$class}");
+        }
+            $this->app->register(\App\User\Infrastructure\Providers\RepositoryServiceProvider::class);
+
+          foreach (glob(app_path('*/Infrastructure/Providers/*RepositoryServiceProvider.php')) as $provider) {
+            $class = (string) Str::of($provider)
+                ->replace(app_path(), 'App')
+                ->replace('/', '\\')
+                ->replace('.php', '');
+
+            $this->app->register($class);
         }
     }
 }
