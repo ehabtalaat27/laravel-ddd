@@ -17,10 +17,8 @@ return new class extends Migration
             $table->string('height')->nullable();
             $table->string('weight')->nullable();
             $table->date('birthday')->nullable();
-            $table->boolean('has_injuries')->nullable();
             $table->tinyInteger('gender')->nullable(); // 1 => male, 2 => female
             $table->tinyInteger('fitness_level')->nullable();  // 1 =>  beginner, 2 => intermediate, 3 => advanced
-            $table->text('other_allergic_food')->nullable();
             $table->timestamps();
         });
     }

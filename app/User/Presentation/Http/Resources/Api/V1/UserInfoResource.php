@@ -4,16 +4,16 @@ namespace App\User\Presentation\Http\Resources\Api\V1;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class UserInfoResource extends JsonResource
 {
     public function toArray($request): array
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'info' => new UserInfoResource($this->info),
+            'height' => $this->height,
+            'weight' => $this->weight,
+            'gender' => $this->gender?->label(),
+            'fitness_level' => $this->fitness_level?->label()
         ];
     }
 }
