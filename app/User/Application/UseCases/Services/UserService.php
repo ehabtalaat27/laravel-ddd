@@ -2,6 +2,8 @@
 
 namespace App\User\Application\UseCases\Services;
 
+use App\User\Domain\Entities\UserEntity;
+use App\User\Domain\Entities\UserInfoEntity;
 use App\User\Domain\Repositories\UserRepositoryInterface;
 
 class UserService
@@ -14,18 +16,43 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
-    /**
-     * Create a new user with the given request.
-     *
-     * @param Request $request
-     * @return User
-     */
+/**
+ * Create a new user
+ *
+ * @param \Illuminate\Http\Request $request
+ * @return \App\User\Domain\Entities\UserEntity
+ */
     public function create($request)
     {
-        $user = $this->userRepository->create($request->validated());
+        $data = $request->validated();
 
-        $user->info()->create($request->validated());
+        $user = UserEntity::fromArray($data);
 
-        return $user;
+        $userInfo = UserInfoEntity::fromArray($data);
+
+        return $this->userRepository->saveWithInfo($user, $userInfo->toArray() ?? []);
+    }
+
+/**
+ * Deactivate a user by its ID
+ *
+ * @param int $id
+ *
+ * @return \App\User\Domain\Entities\UserEntity
+ *
+ * @throws \Exception
+ */
+    public function deactivate(int $id)
+    {
+        // Get user entity from repo
+        $user = $this->userRepository->findEntity($id);
+
+        if (! $user) {
+            throw new \Exception('User not found.');
+        }
+
+        $user->deactivate();
+
+        return $this->userRepository->save($user);
     }
 }

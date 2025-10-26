@@ -50,6 +50,12 @@ class UserController extends BaseApiController
     }
 
 
+    public function deactivate($id)
+    {
+        $user = $this->userService->deactivate($id);
+
+        return new UserResource($user);
+    }
     /**
      * Remove a user by its ID
      *

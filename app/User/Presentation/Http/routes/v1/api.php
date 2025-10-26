@@ -8,3 +8,5 @@ use Illuminate\Support\Facades\Route;
 
 //users
 Route::apiResource('users', UserController::class)->except('update');
+
+Route::patch('users/{id}/deactivate', [UserController::class, 'deactivate']);
