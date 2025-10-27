@@ -27,6 +27,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $model->save();
 
         $entity->id = $model->id;
+        $model->refresh();
 
         return $model;
     }
@@ -36,10 +37,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $userModel = $entity->id ? User::find($entity->id) : new User();
         $userModel->fill($entity->toArray());
         $userModel->save();
-     
+
         if (!empty($infoData)) {
             $userModel->info()->updateOrCreate([], $infoData);
         }
+        $userModel->refresh();
 
         return $userModel->load('info');
     }

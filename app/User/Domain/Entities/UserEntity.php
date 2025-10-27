@@ -2,6 +2,8 @@
 
 namespace App\User\Domain\Entities;
 
+use App\User\Domain\ValueObjects\Email;
+
 class UserEntity
 {
     protected array $attributes = [];
@@ -9,7 +11,14 @@ class UserEntity
     public function __construct(array $attributes = [])
     {
         foreach ($attributes as $key => $value) {
-            $this->attributes[$key] = $value;
+            // If the key is 'email', wrap it in the Email value object
+            if ($key === 'email') {
+                $this->attributes[$key] = $value instanceof Email
+                    ? $value
+                    : new Email($value);
+            } else {
+                $this->attributes[$key] = $value;
+            }
         }
     }
 

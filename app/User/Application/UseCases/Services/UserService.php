@@ -55,4 +55,17 @@ class UserService
 
         return $this->userRepository->save($user);
     }
+       public function activate(int $id)
+    {
+        // Get user entity from repo
+        $user = $this->userRepository->findEntity($id);
+
+        if (! $user) {
+            throw new \Exception('User not found.');
+        }
+
+        $user->activate();
+
+        return $this->userRepository->save($user);
+    }
 }
