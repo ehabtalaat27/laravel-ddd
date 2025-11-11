@@ -44,6 +44,7 @@ return [
         ],
 
         'mysql' => [
+            'sticky' => true,
             'driver' => 'mysql',
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
@@ -61,6 +62,41 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
+            'read' => [
+                'host' => [env('DB_HOST_READ', '127.0.0.1')],
+                'port' => env('DB_PORT_READ', 3308),
+            ],
+            'write' => [
+                'host' => [env('DB_HOST_WRITE', '127.0.0.1')],
+                'port' => env('DB_PORT_WRITE', 3307),
+            ],
+        ],
+        'mysql_write' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST_WRITE', '127.0.0.1'),
+            'port' => env('DB_PORT_WRITE', 3307),
+            'database' => env('DB_DATABASE', 'laravel'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
+        'mysql_read' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST_READ', '127.0.0.1'),
+            'port' => env('DB_PORT_READ', 3308),
+            'database' => env('DB_DATABASE', 'laravel'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
         ],
 
         'mariadb' => [
@@ -148,7 +184,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-database-'),
+            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')) . '-database-'),
             'persistent' => env('REDIS_PERSISTENT', false),
         ],
 
